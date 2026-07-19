@@ -42,7 +42,7 @@ The broader point: transparency laws only create accountability if someone can a
 - **Redactions as data** — each `RedactedSpan` records its exemption code and surrounding context, is linked to its document and nearby entities, and is ringed in red in the explorer.
 - **GraphRAG chat (`/chat`)** — questions are answered by vector search over embedded content, followed by one-hop graph expansion (including attached redactions), then a streamed Gemini answer grounded in the retrieved records.
 - **Visual explorer (`/explorer`)** — the whole graph rendered with Cytoscape: filter by type, inspect nodes, follow the meeting chains.
-- **Runtime ingestion (`/upload`)** — drop a PDF or text file into the running app and it flows through the same extract → resolve → embed → merge pipeline.
+- **Runtime ingestion with a live pipeline view (`/upload`)** — drop one or many PDFs/text files into the running app and watch the pipeline work in real time: a per-file queue with remaining count, a stage stepper (parse → extract → resolve → embed → write nodes → write edges) with live counts (e.g. "Write nodes 12/34"), per-edge activity messages, and an activity log. Progress streams from the server as NDJSON, the same idiom the chat endpoint uses; one failed file doesn't stop the batch.
 - **Idempotent graph writes** — ingestion uses `MERGE` with constraints, and the vector index is created on startup; re-ingesting is safe.
 - **Fail-fast configuration** — the environment is validated with Zod at boot (`src/lib/config.ts`), and the embedding dimension is measured at runtime rather than hardcoded, so switching embedding models can't silently corrupt the vector index.
 

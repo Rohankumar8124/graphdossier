@@ -20,6 +20,24 @@ export interface DocInput {
   source?: string;
 }
 
+export type IngestStage =
+  | "extract"
+  | "resolve"
+  | "embed"
+  | "write-nodes"
+  | "write-edges";
+
+/** A live progress event emitted while a document moves through the pipeline. */
+export interface IngestProgress {
+  stage: IngestStage;
+  message: string;
+  /** Completed units within the stage, when the stage is countable. */
+  current?: number;
+  total?: number;
+}
+
+export type IngestProgressFn = (p: IngestProgress) => void;
+
 /** Lowercase, strip honorifics/punctuation, collapse whitespace. */
 function slug(name: string): string {
   return name
@@ -55,17 +73,29 @@ function entityProps(e: ExtractedEntity): Record<string, unknown> {
 }
 
 /** Run the full pipeline for one document. Returns a small ingest summary. */
-export async function ingestDocument(doc: DocInput): Promise<{
+export async function ingestDocument(
+  doc: DocInput,
+  onProgress?: IngestProgressFn,
+): Promise<{
   nodes: number;
   edges: number;
   redactions: number;
 }> {
+  onProgress?.({
+    stage: "extract",
+    message: "Extracting entities, relationships, and redactions with Gemini…",
+  });
   const extraction = await extractFromDocument({
     text: doc.text,
     title: doc.title,
     date: doc.date,
   });
 
+  onProgress?.({
+    stage: "resolve",
+    message: `Resolving ${extraction.entities.length} entities to canonical ids…`,
+    total: extraction.entities.length,
+  });
   // Map each tempId -> { id, type, name } resolving to canonical ids.
   const byTempId = new Map<
     string,
@@ -84,31 +114,60 @@ export async function ingestDocument(doc: DocInput): Promise<{
   // Ensure a Document node exists even if the model forgot to emit one.
   const docNodeId = `Document:${doc.id}`;
   const hasDocNode = [...byTempId.values()].some((v) => v.id === docNodeId);
+  onProgress?.({
+    stage: "embed",
+    message: "Embedding document for vector search…",
+  });
   const embedding = await getEmbeddings().embedQuery(
     `${doc.title}\n\n${doc.text}`.slice(0, 8000),
   );
 
   // Write nodes. Document gets the embedding + raw text for retrieval.
+  const nodeTotal = byTempId.size + (hasDocNode ? 0 : 1);
+  let nodesWritten = 0;
   for (const v of byTempId.values()) {
     if (v.id === docNodeId) {
       await writeDocumentNode(v.id, v.name, doc, embedding, v.props);
     } else {
       await writeNode(v.type, v.id, v.name, v.props);
     }
+    nodesWritten++;
+    onProgress?.({
+      stage: "write-nodes",
+      message: `Writing ${v.name} to Neo4j`,
+      current: nodesWritten,
+      total: nodeTotal,
+    });
   }
   if (!hasDocNode) {
     await writeDocumentNode(docNodeId, doc.title, doc, embedding, {});
+    nodesWritten++;
+    onProgress?.({
+      stage: "write-nodes",
+      message: `Writing ${doc.title} to Neo4j`,
+      current: nodesWritten,
+      total: nodeTotal,
+    });
   }
 
   // Write edges, dropping any that violate the ontology triple set.
+  const edgeTotal = extraction.relationships.length;
   let edges = 0;
+  let edgesSeen = 0;
   for (const r of extraction.relationships) {
+    edgesSeen++;
     const s = byTempId.get(r.sourceTempId);
     const t = byTempId.get(r.targetTempId);
     if (!s || !t) continue;
     if (!TRIPLE_SET.has(`${s.type}|${r.type}|${t.type}`)) continue;
     await writeEdge(s.id, r.type, t.id);
     edges++;
+    onProgress?.({
+      stage: "write-edges",
+      message: `${s.name} —${r.type}→ ${t.name}`,
+      current: edgesSeen,
+      total: edgeTotal,
+    });
   }
 
   const redactions = [...byTempId.values()].filter(
