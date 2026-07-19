@@ -1,0 +1,13 @@
+{
+  "collection": "Project Greenfield",
+  "description": "Synthetic FOIA release demonstrating Graphdossier. A fictional riverside development is fast-tracked while a contamination finding is buried. Planted aliases (Robert 'Bob' Calloway / R. Calloway), a hidden meeting chain, an undisclosed dual-role consultant, and exemption-coded redactions (b4/b5/b6) make the graph features fire predictably.",
+  "documents": [
+    { "id": "gf-001-memo", "file": "gf-001-memo.txt", "title": "Internal memo: Greenfield accelerated review", "date": "2023-03-04" },
+    { "id": "gf-002-email-thread", "file": "gf-002-email-thread.txt", "title": "Email: Whitfield ↔ Calloway re: environmental desk", "date": "2023-03-09" },
+    { "id": "gf-003-contamination-report", "file": "gf-003-contamination-report.txt", "title": "Draft contamination review — Atwater Mill", "date": "2023-03-15" },
+    { "id": "gf-004-minutes", "file": "gf-004-minutes.txt", "title": "City Council closed session minutes", "date": "2023-03-22" },
+    { "id": "gf-005-whistleblower", "file": "gf-005-whistleblower.txt", "title": "Whistleblower memo for the record", "date": "2023-04-03" },
+    { "id": "gf-006-email-mayor", "file": "gf-006-email-mayor.txt", "title": "Email: Mayor Reed re: Greenfield vote", "date": "2023-04-07" },
+    { "id": "gf-007-invoice", "file": "gf-007-invoice.txt", "title": "Patterson Advisory consulting invoice", "date": "2023-04-14" }
+  ]
+}
