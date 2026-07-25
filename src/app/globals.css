@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
   --background: #0b0f17;
@@ -22,6 +23,7 @@
   --color-accent-2: var(--accent-2);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-serif);
 }
 
 body {
@@ -30,6 +32,151 @@ body {
   font-family:
     ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial,
     sans-serif;
+}
+
+/* The editorial serif carries every heading, site-wide — the one "classy
+   font" upgrade, applied consistently rather than as a one-off. */
+h1,
+h2,
+h3 {
+  font-family: var(--font-serif);
+  letter-spacing: -0.01em;
+}
+
+/* ── Chat / GraphRAG answer typography ───────────────────────────────────────
+   A from-scratch prose theme (not prose-invert's defaults) so headings,
+   emphasis, code, and links read as part of Graphdossier's own dossier language:
+   serif headings, pink accent for emphasis, mono "chip" styling for the
+   inline document/entity ids the model cites. */
+.prose-dossier {
+  color: var(--foreground);
+  font-size: 15px;
+  line-height: 1.75;
+  max-width: none;
+}
+.prose-dossier > :first-child {
+  margin-top: 0;
+}
+.prose-dossier > :last-child {
+  margin-bottom: 0;
+}
+.prose-dossier p {
+  margin: 0.9em 0;
+}
+.prose-dossier h1,
+.prose-dossier h2,
+.prose-dossier h3,
+.prose-dossier h4 {
+  color: var(--foreground);
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 1.3em 0 0.5em;
+}
+.prose-dossier h1 {
+  font-size: 1.5em;
+}
+.prose-dossier h2 {
+  font-size: 1.25em;
+}
+.prose-dossier h3 {
+  font-size: 1.08em;
+}
+.prose-dossier strong {
+  color: var(--foreground);
+  font-weight: 700;
+}
+.prose-dossier em {
+  color: var(--muted);
+}
+.prose-dossier a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  text-underline-offset: 2px;
+}
+.prose-dossier a:hover {
+  text-decoration-color: var(--accent);
+}
+.prose-dossier ul,
+.prose-dossier ol {
+  margin: 0.85em 0;
+  padding-left: 1.4em;
+}
+.prose-dossier li {
+  margin: 0.4em 0;
+}
+.prose-dossier ul > li {
+  list-style: none;
+  position: relative;
+}
+.prose-dossier ul > li::before {
+  content: "";
+  position: absolute;
+  left: -1.1em;
+  top: 0.62em;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--accent);
+}
+.prose-dossier ol > li::marker {
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+/* Inline code — the exemption codes and document ids the model cites — reads
+   as a small evidence tag, matching .stamp-chip elsewhere on the site. */
+.prose-dossier code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 10%, var(--surface-2));
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--border));
+  border-radius: 4px;
+  padding: 0.12em 0.4em;
+}
+.prose-dossier pre {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.9em 1em;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+.prose-dossier pre code {
+  background: none;
+  border: none;
+  color: var(--foreground);
+  padding: 0;
+}
+.prose-dossier blockquote {
+  margin: 1em 0;
+  padding-left: 1em;
+  border-left: 2px solid var(--accent);
+  color: var(--muted);
+  font-style: italic;
+}
+.prose-dossier hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 1.5em 0;
+}
+.prose-dossier table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+  font-size: 0.92em;
+}
+.prose-dossier th {
+  text-align: left;
+  color: var(--muted);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+  padding: 0.5em 0.75em;
+}
+.prose-dossier td {
+  border-bottom: 1px solid var(--border);
+  padding: 0.5em 0.75em;
 }
 
 /* A blacked-out span, used in the hero to evoke a redaction. */

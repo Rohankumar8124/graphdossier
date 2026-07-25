@@ -97,17 +97,20 @@ export default function ChatPage() {
       <div ref={scrollRef} className="flex-1 space-y-6 overflow-y-auto py-8">
         {messages.length === 0 && (
           <div className="pt-6">
-            <h1 className="text-2xl font-semibold">Ask the released records</h1>
-            <p className="mt-2 text-muted">
+            <p className="font-mono text-xs uppercase tracking-widest text-accent">
+              GraphRAG · grounded in your records
+            </p>
+            <h1 className="mt-2 text-3xl font-bold">Ask the released records</h1>
+            <p className="mt-2 max-w-lg text-muted">
               Answers are grounded in the Project Greenfield corpus and cite the
               documents they came from.
             </p>
-            <div className="mt-6 grid gap-2 sm:grid-cols-2">
+            <div className="mt-6 grid gap-2.5 sm:grid-cols-2">
               {SUGGESTIONS.map((s) => (
                 <button
                   key={s}
                   onClick={() => send(s)}
-                  className="rounded-lg border border-border bg-surface p-3 text-left text-sm hover:bg-surface-2"
+                  className="rounded-lg border border-border bg-surface p-3.5 text-left text-sm text-muted transition-colors hover:border-accent/40 hover:bg-surface-2 hover:text-foreground"
                 >
                   {s}
                 </button>
@@ -119,35 +122,40 @@ export default function ChatPage() {
         {messages.map((m, i) => (
           <div key={i}>
             {m.role === "user" ? (
-              <div className="ml-auto max-w-[85%] rounded-2xl rounded-br-sm bg-accent-2/15 px-4 py-2.5">
+              <div className="ml-auto max-w-[85%] rounded-2xl rounded-br-sm bg-accent/15 px-4 py-2.5 text-[15px]">
                 {m.content}
               </div>
             ) : (
               <div className="max-w-[95%]">
-                <div className="prose prose-invert max-w-none text-[15px] leading-relaxed">
+                <div className="prose-dossier">
                   {m.content ? (
                     <ReactMarkdown>{m.content}</ReactMarkdown>
                   ) : (
-                    <span className="text-muted">Searching the records…</span>
+                    <span className="text-sm text-muted">
+                      Searching the records…
+                    </span>
                   )}
                 </div>
                 {m.sources && m.sources.length > 0 && (
-                  <div className="mt-3 space-y-1.5">
-                    <div className="text-xs font-medium uppercase tracking-wide text-muted">
+                  <div className="mt-4 space-y-1.5 border-t border-border pt-3">
+                    <div className="font-mono text-[11px] uppercase tracking-widest text-accent">
                       Sources
                     </div>
                     {m.sources.map((s) => (
                       <details
                         key={s.documentId}
-                        className="rounded-md border border-border bg-surface text-sm"
+                        className="group rounded-md border border-border bg-surface text-sm open:border-accent/30"
                       >
-                        <summary className="cursor-pointer px-3 py-2 font-medium">
-                          {s.title}{" "}
-                          <span className="text-muted">
-                            · score {s.score.toFixed(2)}
+                        <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2 font-medium marker:content-none">
+                          <span className="text-muted transition-transform group-open:rotate-90">
+                            ▸
+                          </span>
+                          {s.title}
+                          <span className="ml-auto shrink-0 font-mono text-xs text-muted">
+                            {s.score.toFixed(2)}
                           </span>
                         </summary>
-                        <pre className="whitespace-pre-wrap px-3 pb-3 text-xs text-muted">
+                        <pre className="whitespace-pre-wrap border-t border-border px-3 py-2.5 font-sans text-xs leading-relaxed text-muted">
                           {s.snippet}
                         </pre>
                       </details>
@@ -171,7 +179,7 @@ export default function ChatPage() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask about the records…"
-          className="flex-1 rounded-lg border border-border bg-surface px-4 py-3 outline-none focus:border-accent-2"
+          className="flex-1 rounded-lg border border-border bg-surface px-4 py-3 outline-none focus:border-accent/50"
         />
         <button
           type="submit"
