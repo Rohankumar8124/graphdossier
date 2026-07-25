@@ -29,6 +29,9 @@ function Nav() {
           Graphdossier
         </Link>
         <div className="flex items-center gap-1 text-sm text-muted">
+          <Link href="/guide" className="rounded px-3 py-1.5 hover:bg-surface-2 hover:text-foreground">
+            How to use
+          </Link>
           <Link href="/chat" className="rounded px-3 py-1.5 hover:bg-surface-2 hover:text-foreground">
             Ask
           </Link>
