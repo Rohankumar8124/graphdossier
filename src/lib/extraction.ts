@@ -1,9 +1,9 @@
 /**
- * Ontology-guided extraction pass.
+ * Schema-guided extraction pass.
  *
  * Given the text of a single released document, Gemini returns the entities,
  * relationships, and — crucially — the redacted spans it can identify, all
- * constrained to the Graphdossier ontology. We use structured output with a
+ * constrained to the Graphdossier graph schema. We use structured output with a
  * *fully specified* Zod schema (every field described, flat shapes only),
  * which is what Gemini's function-calling reliably accepts.
  */
@@ -14,7 +14,7 @@ import {
   RELATIONSHIP_TYPES,
   NODE_DESCRIPTIONS,
   ALLOWED_TRIPLES,
-} from "./ontology";
+} from "./graph-schema";
 
 const EntitySchema = z.object({
   tempId: z
@@ -23,7 +23,7 @@ const EntitySchema = z.object({
       "A short id unique within THIS document (e.g. 'e1', 'e2') used to " +
         "reference the entity from relationships.",
     ),
-  type: z.enum(NODE_TYPES).describe("The ontology node type for this entity."),
+  type: z.enum(NODE_TYPES).describe("The schema node type for this entity."),
   name: z
     .string()
     .describe(
@@ -66,7 +66,7 @@ const RelationshipSchema = z.object({
   sourceTempId: z.string().describe("tempId of the source entity."),
   type: z
     .enum(RELATIONSHIP_TYPES)
-    .describe("The ontology relationship type."),
+    .describe("The schema relationship type."),
   targetTempId: z.string().describe("tempId of the target entity."),
 });
 
@@ -89,7 +89,7 @@ function buildSystemPrompt(): string {
   return [
     "You are an investigative analyst building a knowledge graph from a",
     "released FOIA/RTI document. Extract entities and relationships strictly",
-    "within the ontology below. Resolve obvious aliases to one canonical name",
+    "within the schema below. Resolve obvious aliases to one canonical name",
     "(e.g. 'Bob', 'Robert J. Smith', and a bare signature 'R. Smith' are the",
     "same Person). Treat every blacked-out / withheld / [REDACTED] passage as",
     "a RedactedSpan node — these are investigative leads, not noise. When a",

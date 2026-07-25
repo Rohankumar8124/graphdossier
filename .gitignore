@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# generated graph database (bake into Docker image for deploys)
+data/*
+!data/.gitkeep

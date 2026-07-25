@@ -17,7 +17,7 @@
 import { NextRequest } from "next/server";
 // Import the library entry directly to avoid pdf-parse@1's debug-mode file read.
 import pdf from "pdf-parse/lib/pdf-parse.js";
-import { ensureSchema } from "@/lib/neo4j";
+import { ensureSchema } from "@/lib/graphdb";
 import { ingestDocument } from "@/lib/ingest";
 
 export const runtime = "nodejs";

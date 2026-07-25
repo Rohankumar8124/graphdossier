@@ -12,10 +12,8 @@ const schema = z.object({
   GEMINI_CHAT_MODEL: z.string().default("gemini-2.0-flash"),
   GEMINI_EMBEDDING_MODEL: z.string().default("text-embedding-004"),
 
-  NEO4J_URI: z.string().min(1, "NEO4J_URI is required"),
-  NEO4J_USERNAME: z.string().default("neo4j"),
-  NEO4J_PASSWORD: z.string().min(1, "NEO4J_PASSWORD is required"),
-  NEO4J_DATABASE: z.string().default("neo4j"),
+  /** Directory for the embedded Kùzu database (created on first run). */
+  KUZU_DB_PATH: z.string().default("data/graphdossier.kuzu"),
 });
 
 /** Parsed lazily so that non-server code (and tests) don't crash on import. */

@@ -48,12 +48,12 @@ export default function Home() {
           {
             n: "01",
             t: "Extract",
-            d: "Gemini reads each document against a fixed ontology — Person, Organization, Document, Event, Topic, and RedactedSpan — resolving aliases as it goes.",
+            d: "Gemini reads each document against a fixed graph schema — Person, Organization, Document, Event, Topic, and RedactedSpan — resolving aliases as it goes.",
           },
           {
             n: "02",
             t: "Connect",
-            d: "Entities and relationships are merged into a Neo4j knowledge graph. The same person across dozens of emails collapses into one node.",
+            d: "Entities and relationships are merged into an embedded Kùzu knowledge graph. The same person across dozens of emails collapses into one node.",
           },
           {
             n: "03",

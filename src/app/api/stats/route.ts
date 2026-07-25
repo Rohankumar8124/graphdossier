@@ -1,8 +1,8 @@
 /**
  * GET /api/stats — headline counts for the landing page.
  */
-import { runQuery } from "@/lib/neo4j";
-import { NODE_TYPES } from "@/lib/ontology";
+import { runQuery } from "@/lib/graphdb";
+import { NODE_TYPES } from "@/lib/graph-schema";
 
 export const runtime = "nodejs";
 
@@ -32,11 +32,9 @@ export async function GET() {
   }
 }
 
-// neo4j integers arrive as {low, high}; coerce to a JS number.
+// Kùzu returns INT64 counts as BigInt; coerce to a JS number.
 function toNum(v: unknown): number {
   if (typeof v === "number") return v;
-  if (v && typeof v === "object" && "low" in v) {
-    return (v as { low: number }).low;
-  }
+  if (typeof v === "bigint") return Number(v);
   return 0;
 }

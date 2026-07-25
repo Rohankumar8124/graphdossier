@@ -11,6 +11,8 @@
 import { NextRequest } from "next/server";
 import { getChatModel } from "@/lib/gemini";
 import { buildContext, RAG_SYSTEM_PROMPT } from "@/lib/rag";
+import { runGraphEditor } from "@/lib/agent";
+import { classifyIntent } from "@/lib/intent";
 import type { ChatRequest } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -31,6 +33,25 @@ export async function POST(req: NextRequest) {
   const stream = new ReadableStream({
     async start(controller) {
       try {
+        // Intent-classified routing: edit commands go to the LangGraph
+        // editing agent (name→id resolution, schema-validated mutations);
+        // everything else flows to GraphRAG Q&A below.
+        if ((await classifyIntent(message)) === "graph_edit") {
+          const history = (body.history ?? []).map((h) => ({
+            role:
+              h.role === "assistant"
+                ? ("assistant" as const)
+                : ("user" as const),
+            content: h.content,
+          }));
+          const { reply, mutated } = await runGraphEditor(message, history);
+          controller.enqueue(line({ type: "sources", sources: [] }));
+          controller.enqueue(line({ type: "token", text: reply }));
+          if (mutated) controller.enqueue(line({ type: "mutated" }));
+          controller.enqueue(line({ type: "done" }));
+          return;
+        }
+
         const { prompt, sources } = await buildContext(message);
         controller.enqueue(line({ type: "sources", sources }));
 

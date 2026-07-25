@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import cytoscape, { Core, ElementDefinition } from "cytoscape";
-import { NODE_COLORS, NODE_TYPES, type NodeType } from "@/lib/ontology";
+import { NODE_COLORS, NODE_TYPES, type NodeType } from "@/lib/graph-schema";
 import type { GraphData, GraphNode } from "@/lib/types";
 
 export default function GraphCanvas() {

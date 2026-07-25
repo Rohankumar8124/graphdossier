@@ -1,15 +1,15 @@
 /**
- * Graphdossier ontology.
+ * Graphdossier graph schema.
  *
  * Turns a pile of released FOIA/RTI documents into a navigable map of
  * who knew what, when — and what's still hidden. The distinctive trait of
- * this ontology is that a *redaction* is a first-class node (`RedactedSpan`),
+ * this schema is that a *redaction* is a first-class node (`RedactedSpan`),
  * so a blacked-out passage becomes a queryable investigative lead rather than
  * an absence in the text.
  *
  * This single source of truth constrains the Gemini extraction pass
- * (via `allowedNodes` / `allowedRelationships`) and documents the graph schema
- * for the UI and GraphRAG layers.
+ * (via `allowedNodes` / `allowedRelationships`), drives the database table
+ * definitions, and documents the typed graph for the UI and GraphRAG layers.
  */
 
 /** Node labels in the graph. */
@@ -88,13 +88,13 @@ export const NODE_DESCRIPTIONS: Record<NodeType, string> = {
 
 /** Colors for the graph explorer legend, keyed by node type. */
 export const NODE_COLORS: Record<NodeType, string> = {
-  Person: "#60a5fa", // blue
-  Organization: "#34d399", // green
-  Document: "#fbbf24", // amber
-  Event: "#f472b6", // pink
-  Location: "#a78bfa", // violet
-  Topic: "#22d3ee", // cyan
-  RedactedSpan: "#f87171", // red — the lead
+  Person: "#2dd4bf", // teal
+  Organization: "#818cf8", // indigo
+  Document: "#a3e635", // lime
+  Event: "#fb923c", // orange
+  Location: "#e879f9", // fuchsia
+  Topic: "#facc15", // yellow
+  RedactedSpan: "#ef4444", // red — the lead
 };
 
 /** Convenience: plain string arrays for the LangChain LLMGraphTransformer. */

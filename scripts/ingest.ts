@@ -5,7 +5,7 @@
  *   pnpm ingest --reset               # wipe the graph first, then ingest
  *   pnpm ingest --dir corpus/other    # ingest a different manifest directory
  *
- * Loads env from .env.local, ensures the schema (constraints + vector index),
+ * Loads env from .env.local, ensures the graph tables,
  * then runs each document through extract → resolve → embed → write.
  */
 import dotenv from "dotenv";
@@ -13,7 +13,7 @@ dotenv.config({ path: ".env.local" });
 
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { ensureSchema, resetGraph, closeDriver } from "../src/lib/neo4j";
+import { ensureSchema, resetGraph, closeGraph } from "../src/lib/graphdb";
 import { ingestDocument, type DocInput } from "../src/lib/ingest";
 
 interface Manifest {
@@ -38,7 +38,7 @@ async function main() {
     await resetGraph();
   }
 
-  console.log("🔧 Ensuring schema (constraints + vector index)…");
+  console.log("🔧 Ensuring graph tables…");
   await ensureSchema();
 
   let totals = { nodes: 0, edges: 0, redactions: 0 };
@@ -65,11 +65,11 @@ async function main() {
     `\n✅ Done. ~${totals.nodes} nodes, ${totals.edges} edges, ` +
       `${totals.redactions} redacted spans (pre-merge counts).`,
   );
-  await closeDriver();
+  await closeGraph();
 }
 
 main().catch(async (err) => {
   console.error("\n❌ Ingestion failed:\n", err);
-  await closeDriver();
+  await closeGraph();
   process.exit(1);
 });

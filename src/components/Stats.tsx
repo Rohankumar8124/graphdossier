@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { NODE_COLORS } from "@/lib/ontology";
+import { NODE_COLORS } from "@/lib/graph-schema";
 
 interface StatsResponse {
   counts: Record<string, number>;
@@ -30,7 +30,7 @@ export default function Stats() {
   if (!data.ready || total === 0) {
     return (
       <div className="rounded-lg border border-border bg-surface p-5 text-sm text-muted">
-        No graph yet. Add your Neo4j + Gemini credentials to{" "}
+        No graph yet. Add your Gemini key to{" "}
         <code className="text-foreground">.env.local</code> and run{" "}
         <code className="text-foreground">pnpm ingest --reset</code> to load the
         Project Greenfield corpus.

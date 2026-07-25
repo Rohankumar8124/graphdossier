@@ -1,5 +1,5 @@
 /**
- * Ingestion: extract → resolve entities → embed → write to Neo4j.
+ * Ingestion: extract → resolve entities → embed → write to the graph.
  *
  * Entity resolution is deliberately simple and deterministic: an entity's
  * canonical id is `type:slug(name)`, so the same normalized name appearing in
@@ -8,8 +8,9 @@
  */
 import { extractFromDocument, type ExtractedEntity } from "./extraction";
 import { getEmbeddings } from "./gemini";
-import { runQuery } from "./neo4j";
-import { ALLOWED_TRIPLES, type NodeType } from "./ontology";
+import { runQuery } from "./graphdb";
+import { canonicalId } from "./graph-ops";
+import { ALLOWED_TRIPLES, type NodeType } from "./graph-schema";
 
 export interface DocInput {
   /** Stable id, typically the source filename without extension. */
@@ -37,27 +38,6 @@ export interface IngestProgress {
 }
 
 export type IngestProgressFn = (p: IngestProgress) => void;
-
-/** Lowercase, strip honorifics/punctuation, collapse whitespace. */
-function slug(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/\b(mr|mrs|ms|dr|sir|hon)\.?\b/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 80);
-}
-
-function canonicalId(type: NodeType, name: string, docId: string): string {
-  // The document itself gets the caller-provided stable id; everything else is
-  // resolved by normalized name so cross-document mentions merge.
-  if (type === "Document") return `Document:${docId}`;
-  // Redactions are intentionally NOT merged across documents — each blackout is
-  // its own lead — so they are scoped to the document and their slug.
-  if (type === "RedactedSpan")
-    return `RedactedSpan:${docId}:${slug(name) || "span"}`;
-  return `${type}:${slug(name)}`;
-}
 
 const TRIPLE_SET = new Set(ALLOWED_TRIPLES.map(([s, r, t]) => `${s}|${r}|${t}`));
 
@@ -134,7 +114,7 @@ export async function ingestDocument(
     nodesWritten++;
     onProgress?.({
       stage: "write-nodes",
-      message: `Writing ${v.name} to Neo4j`,
+      message: `Writing ${v.name} to the graph`,
       current: nodesWritten,
       total: nodeTotal,
     });
@@ -144,13 +124,13 @@ export async function ingestDocument(
     nodesWritten++;
     onProgress?.({
       stage: "write-nodes",
-      message: `Writing ${doc.title} to Neo4j`,
+      message: `Writing ${doc.title} to the graph`,
       current: nodesWritten,
       total: nodeTotal,
     });
   }
 
-  // Write edges, dropping any that violate the ontology triple set.
+  // Write edges, dropping any that violate the allowed-triples set.
   const edgeTotal = extraction.relationships.length;
   let edges = 0;
   let edgesSeen = 0;
@@ -160,7 +140,7 @@ export async function ingestDocument(
     const t = byTempId.get(r.targetTempId);
     if (!s || !t) continue;
     if (!TRIPLE_SET.has(`${s.type}|${r.type}|${t.type}`)) continue;
-    await writeEdge(s.id, r.type, t.id);
+    await writeEdge(s.type, s.id, r.type, t.type, t.id);
     edges++;
     onProgress?.({
       stage: "write-edges",
@@ -177,16 +157,28 @@ export async function ingestDocument(
   return { nodes: byTempId.size + (hasDocNode ? 0 : 1), edges, redactions };
 }
 
+/** Build `SET n.k = $k` fragments for the props present, plus their params. */
+function setClauses(props: Record<string, unknown>): {
+  fragment: string;
+  params: Record<string, unknown>;
+} {
+  const keys = Object.keys(props);
+  if (!keys.length) return { fragment: "", params: {} };
+  const fragment = ", " + keys.map((k) => `n.${k} = $${k}`).join(", ");
+  return { fragment, params: props };
+}
+
 async function writeNode(
   type: NodeType,
   id: string,
   name: string,
   props: Record<string, unknown>,
 ): Promise<void> {
+  const { fragment, params } = setClauses(props);
   await runQuery(
     `MERGE (n:${type} {id: $id})
-     SET n.name = $name, n += $props`,
-    { id, name, props },
+     SET n.name = $name${fragment}`,
+    { id, name, ...params },
   );
 }
 
@@ -197,33 +189,36 @@ async function writeDocumentNode(
   embedding: number[],
   props: Record<string, unknown>,
 ): Promise<void> {
+  const { fragment, params } = setClauses(props);
   await runQuery(
     `MERGE (n:Document {id: $id})
      SET n.name = $name,
          n.title = $title,
          n.text = $text,
          n.source = $source,
-         n.embedding = $embedding,
-         n += $props`,
+         n.embedding = $embedding${fragment}`,
     {
       id,
       name,
       title: doc.title,
       text: doc.text,
       source: doc.source ?? doc.id,
-      embedding,
-      props,
+      // stored as JSON and ranked in TypeScript at query time
+      embedding: JSON.stringify(embedding),
+      ...params,
     },
   );
 }
 
 async function writeEdge(
+  sourceType: NodeType,
   sourceId: string,
   type: string,
+  targetType: NodeType,
   targetId: string,
 ): Promise<void> {
   await runQuery(
-    `MATCH (s {id: $sourceId}), (t {id: $targetId})
+    `MATCH (s:${sourceType} {id: $sourceId}), (t:${targetType} {id: $targetId})
      MERGE (s)-[r:${type}]->(t)`,
     { sourceId, targetId },
   );

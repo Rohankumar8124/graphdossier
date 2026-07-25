@@ -41,8 +41,7 @@ export function getEmbeddings(): GoogleGenerativeAIEmbeddings {
 
 /**
  * The embedding dimension is *measured at runtime* the first time it's needed,
- * never hardcoded — different Gemini embedding models emit different widths and
- * the Neo4j vector index must match exactly.
+ * never hardcoded — different Gemini embedding models emit different widths.
  */
 let measuredDimension: number | null = null;
 

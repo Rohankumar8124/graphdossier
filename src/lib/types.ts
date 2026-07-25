@@ -1,7 +1,7 @@
 /**
  * Shared types used across the API routes and UI.
  */
-import type { NodeType, RelationshipType } from "./ontology";
+import type { NodeType, RelationshipType } from "./graph-schema";
 
 /** A node as returned to the graph explorer. */
 export interface GraphNode {

@@ -7,8 +7,7 @@
  * not just the prose.
  */
 import { getEmbeddings } from "./gemini";
-import { runQuery, VECTOR_INDEX } from "./neo4j";
-import neo4j from "neo4j-driver";
+import { runQuery, cosine } from "./graphdb";
 import type { RetrievedContext } from "./types";
 
 interface DocHit {
@@ -26,30 +25,52 @@ interface NeighborRow {
   exemptionCode: string | null;
 }
 
-/** Vector search for the top-k most relevant documents. */
+/**
+ * Semantic search for the top-k most relevant documents: embed the query,
+ * then rank stored document embeddings by cosine similarity in TypeScript.
+ * The corpus is document-scale (not chunk-scale), so this stays fast without
+ * any index infrastructure.
+ */
 async function searchDocuments(query: string, k: number): Promise<DocHit[]> {
-  const embedding = await getEmbeddings().embedQuery(query);
-  return runQuery<DocHit>(
-    `CALL db.index.vector.queryNodes($index, $k, $embedding)
-     YIELD node, score
-     RETURN node.id AS id, node.title AS title, node.text AS text, score
-     ORDER BY score DESC`,
-    { index: VECTOR_INDEX, k: neo4j.int(k), embedding },
+  const queryEmbedding = await getEmbeddings().embedQuery(query);
+  const rows = await runQuery<{
+    id: string;
+    title: string;
+    text: string;
+    embedding: string | null;
+  }>(
+    `MATCH (d:Document)
+     RETURN d.id AS id, d.title AS title, d.text AS text, d.embedding AS embedding`,
   );
+  return rows
+    .filter((r) => r.embedding)
+    .map((r) => ({
+      id: r.id,
+      title: r.title,
+      text: r.text,
+      score: cosine(queryEmbedding, JSON.parse(r.embedding!) as number[]),
+    }))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, k);
 }
 
 /** One hop out from a document: connected entities and redactions. */
 async function neighbors(docId: string): Promise<NeighborRow[]> {
-  return runQuery<NeighborRow>(
-    `MATCH (d:Document {id: $docId})-[r]-(n)
-     RETURN type(r) AS rel,
-            CASE WHEN startNode(r) = d THEN 'out' ELSE 'in' END AS dir,
-            labels(n)[0] AS type,
-            coalesce(n.name, n.title, '?') AS name,
-            n.exemptionCode AS exemptionCode
+  const out = await runQuery<NeighborRow>(
+    `MATCH (d:Document {id: $docId})-[r]->(n)
+     RETURN label(r) AS rel, 'out' AS dir, label(n) AS type,
+            coalesce(n.name, '?') AS name, n.exemptionCode AS exemptionCode
      LIMIT 50`,
     { docId },
   );
+  const inbound = await runQuery<NeighborRow>(
+    `MATCH (n)-[r]->(d:Document {id: $docId})
+     RETURN label(r) AS rel, 'in' AS dir, label(n) AS type,
+            coalesce(n.name, '?') AS name, n.exemptionCode AS exemptionCode
+     LIMIT 50`,
+    { docId },
+  );
+  return [...out, ...inbound].slice(0, 50);
 }
 
 export interface RagContext {
