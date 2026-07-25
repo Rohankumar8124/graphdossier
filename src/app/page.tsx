@@ -4,10 +4,6 @@ import Reveal from "@/components/Reveal";
 
 const FILE_INDEX = [
   {
-    t: "GraphRAG chat",
-    d: "semantic search → one-hop graph expansion → streamed answers grounded in the records.",
-  },
-  {
     t: "Schema-guided extraction",
     d: "Gemini structured output constrained by a typed graph schema — it can't invent a type the graph doesn't know.",
   },
@@ -107,6 +103,97 @@ export default function Home() {
         <Stats />
       </Reveal>
 
+      {/* THE game changer: the graph-editing agent */}
+      <section className="mt-16 grid items-center gap-10 lg:grid-cols-2">
+        <Reveal className="fx-rise">
+          <p className="font-mono text-xs uppercase tracking-widest text-accent">
+            The game changer
+          </p>
+          <h2 className="mt-2 text-3xl font-bold leading-tight">
+            Don&apos;t just ask your graph.{" "}
+            <span className="text-accent">Tell it.</span>
+          </h2>
+          <p className="mt-4 text-muted">
+            Most knowledge graphs are read-only artifacts. Graphdossier ships a{" "}
+            <strong className="text-foreground">
+              LangGraph agent with write access
+            </strong>{" "}
+            — type what you want changed, in plain English, and it happens.
+            Delete a duplicate. Rename an alias. Wire two entities together. No
+            query language, no forms.
+          </p>
+          <ul className="mt-5 space-y-2 text-sm">
+            {[
+              ["Resolves names to exact nodes before touching anything", ""],
+              ["Schema-validated — it cannot create a link the graph forbids", ""],
+              ["Runs the same operations as the public REST API, nothing more", ""],
+              ["Reports precisely what changed, every time", ""],
+            ].map(([b]) => (
+              <li key={b} className="flex gap-2.5">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent" />
+                <span className="text-muted">{b}</span>
+              </li>
+            ))}
+          </ul>
+          <Link
+            href="/chat"
+            className="mt-6 inline-block rounded-md bg-accent px-5 py-2.5 font-medium text-background hover:opacity-90"
+          >
+            Command the graph →
+          </Link>
+        </Reveal>
+
+        {/* live-feel transcript, the only glowing card on the page */}
+        <Reveal
+          className="fx-rise glow-accent rounded-xl border bg-surface p-5"
+          delay={140}
+        >
+          <p className="mb-3 font-mono text-[10px] uppercase tracking-widest text-muted">
+            /chat · live session
+          </p>
+          <div className="space-y-3 text-sm">
+            <div className="flex justify-end">
+              <span className="rounded-lg rounded-br-sm bg-accent px-3 py-1.5 text-background">
+                connect Alice Vasquez to Acme Corp
+              </span>
+            </div>
+            <div className="flex">
+              <div className="rounded-lg rounded-bl-sm border border-border bg-background/60 px-3 py-2 font-mono text-xs leading-5 text-muted">
+                <span className="text-accent">find_nodes</span> →
+                Person:alice-vasquez · Organization:acme-corp
+                <br />
+                <span className="text-accent">connect_nodes</span> →
+                AFFILIATED_WITH ✓
+                <br />
+                <span className="text-foreground">
+                  Connected Alice Vasquez —AFFILIATED_WITH→ Acme Corp.
+                </span>
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <span className="rounded-lg rounded-br-sm bg-accent px-3 py-1.5 text-background">
+                link the lab report to Riverside Fund
+              </span>
+            </div>
+            <div className="flex">
+              <div className="rounded-lg rounded-bl-sm border border-border bg-background/60 px-3 py-2 font-mono text-xs leading-5 text-muted">
+                <span className="text-accent">connect_nodes</span> → ✗ schema
+                violation
+                <br />
+                <span className="text-foreground">
+                  A Document can&apos;t link to an Organization that way — allowed:
+                  MENTIONS. Want me to use that?
+                </span>
+              </div>
+            </div>
+          </div>
+          <p className="mt-4 border-t border-border pt-3 text-[11px] text-muted">
+            The schema is the guardrail: the agent physically can&apos;t corrupt the
+            graph — it negotiates instead.
+          </p>
+        </Reveal>
+      </section>
+
       {/* How it works */}
       <section className="mt-16 grid gap-6 sm:grid-cols-3">
         {[
@@ -191,35 +278,33 @@ export default function Home() {
             </div>
           </Reveal>
 
-          {/* Exhibit B: agent editing — a mini transcript */}
+          {/* Exhibit B: GraphRAG Q&A — grounded answers */}
           <Reveal className="fx-rise rounded-lg border border-border bg-surface p-6" delay={120}>
             <p className="font-mono text-xs uppercase tracking-widest text-accent">
               Exhibit B
             </p>
             <h3 className="mt-1 text-lg font-semibold">
-              <span className="fx-unredact">Edit the graph by chatting</span>
+              <span className="fx-unredact">Ask, and get grounded answers</span>
             </h3>
             <p className="mt-2 text-sm text-muted">
-              A LangGraph agent resolves names to nodes and performs
-              schema-validated edits — then tells you exactly what changed.
+              Semantic search finds the documents, one-hop graph expansion pulls
+              in connected entities and redactions, and the answer streams back
+              citing the records.
             </p>
             <div className="mt-4 space-y-2.5 text-sm">
               <div className="flex justify-end">
                 <span className="rounded-lg rounded-br-sm bg-accent px-3 py-1.5 text-background">
-                  connect Alice Vasquez to Acme Corp
+                  who buried the contamination report?
                 </span>
               </div>
               <div className="flex">
-                <div className="rounded-lg rounded-bl-sm border border-border bg-background/60 px-3 py-2 font-mono text-xs leading-5 text-muted">
-                  <span className="text-accent">find_nodes</span> → Person:alice-vasquez ·
-                  Organization:acme-corp
-                  <br />
-                  <span className="text-accent">connect_nodes</span> →
-                  AFFILIATED_WITH ✓
-                  <br />
-                  <span className="text-foreground">
-                    Connected Alice Vasquez —AFFILIATED_WITH→ Acme Corp.
-                  </span>
+                <div className="rounded-lg rounded-bl-sm border border-border bg-background/60 px-3 py-2 text-xs leading-5 text-muted">
+                  The lab summary (gf-003) reached{" "}
+                  <span className="text-foreground">R. Calloway</span> on May 2;
+                  the closed-session minutes (gf-004) show the finding was
+                  dropped from the agenda — the deciding exchange sits behind a{" "}
+                  <span className="text-accent">b(5) redaction</span> linked to
+                  the same meeting.
                 </div>
               </div>
             </div>

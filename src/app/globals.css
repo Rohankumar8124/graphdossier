@@ -236,3 +236,11 @@ body {
     content: "";
   }
 }
+
+/* The one glowing element on the page — reserved for the agent showcase. */
+.glow-accent {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  box-shadow:
+    0 0 56px -18px color-mix(in srgb, var(--accent) 60%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--accent) 12%, transparent);
+}
