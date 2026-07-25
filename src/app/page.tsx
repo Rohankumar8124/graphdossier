@@ -98,8 +98,104 @@ export default function Home() {
         </div>
       </section>
 
+      {/* The domain: what FOIA/RTI is, and why this needs to exist */}
+      <section className="mt-20 grid gap-10 lg:grid-cols-5">
+        {/* The law, in one breath */}
+        <Reveal className="fx-rise lg:col-span-2">
+          <p className="font-mono text-xs uppercase tracking-widest text-accent">
+            The domain
+          </p>
+          <h2 className="mt-2 text-2xl font-bold leading-snug">
+            What&apos;s a FOIA/RTI release?
+          </h2>
+          <div className="mt-3 flex gap-2">
+            <span className="stamp-chip">FOIA · USA · 1966</span>
+            <span className="stamp-chip">RTI · India · 2005</span>
+          </div>
+          <p className="mt-4 text-sm leading-relaxed text-muted">
+            Transparency laws that let{" "}
+            <strong className="text-foreground">any citizen</strong> force the
+            government to hand over its internal records — emails, memos,
+            meeting minutes, invoices. It&apos;s how journalists find out what
+            officials actually did, not what they announced.
+          </p>
+          <p className="mt-3 text-sm leading-relaxed text-muted">
+            Before release, officials black out passages under legal
+            exemptions — and must cite which one next to every bar:
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
+            <span className="stamp-chip">b(4) commercial</span>
+            <span className="stamp-chip">b(5) deliberative</span>
+            <span className="stamp-chip">b(6) privacy</span>
+          </div>
+          <p className="mt-3 text-sm leading-relaxed text-muted">
+            So every <span className="text-accent">black bar is labeled
+            evidence</span>: it tells you what <em>kind</em> of thing was
+            hidden, right where it was hidden.
+          </p>
+        </Reveal>
+
+        {/* The need, as case-file findings */}
+        <div className="lg:col-span-3">
+          <p className="fx-type mt-1 font-mono text-xs uppercase tracking-widest text-muted">
+            Why this needs to exist
+          </p>
+          <div className="mt-3">
+            {[
+              {
+                n: "01",
+                t: "Released is not the same as read",
+                d: "Millions of pages come out of FOIA/RTI requests every year — and most are read by nobody. Transparency laws only create accountability if someone can actually process what gets released.",
+              },
+              {
+                n: "02",
+                t: "The story lives between documents",
+                d: "The same consultant on both sides of a deal. A meeting right before a vote. A report that vanishes after one email. Full-text search indexes words; the truth is a network.",
+              },
+              {
+                n: "03",
+                t: "What's hidden is the best lead",
+                d: "A privacy redaction next to “approved the payment” isn't missing data — it's a signpost. Redaction patterns tell you exactly what to request next. No other tool treats them as data.",
+              },
+            ].map((f, i) => (
+              <Reveal
+                key={f.n}
+                className="fx-rise border-b border-border py-5 first:border-t"
+                delay={i * 110}
+              >
+                <div className="flex items-baseline gap-4">
+                  <span className="font-mono text-2xl font-bold text-accent">
+                    {f.n}
+                  </span>
+                  <div>
+                    <h3 className="font-semibold">
+                      <span className="fx-unredact">{f.t}</span>
+                    </h3>
+                    <p className="mt-1.5 text-sm leading-relaxed text-muted">
+                      {f.d}
+                    </p>
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+          <Reveal className="fx-rise mt-4" delay={330}>
+            <p className="text-sm text-muted">
+              <span className="font-mono text-xs uppercase tracking-widest text-accent">
+                Built for
+              </span>{" "}
+              — investigative journalists (weeks of cross-referencing → minutes),
+              transparency &amp; civic-tech groups (redaction patterns become
+              measurable), policy researchers (primary-source networks with
+              citations), and anyone filing the follow-up RTI/FOIA request that
+              actually hits.
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
       {/* Live stats */}
-      <Reveal as="section" className="fx-rise mt-12">
+      <Reveal as="section" className="fx-rise mt-16">
         <Stats />
       </Reveal>
 
