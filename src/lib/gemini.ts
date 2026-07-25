@@ -51,3 +51,21 @@ export async function getEmbeddingDimension(): Promise<number> {
   measuredDimension = probe.length;
   return measuredDimension;
 }
+
+/**
+ * Google's free-tier Gemini quota is tiny (as low as 20 requests/day for some
+ * models) and shared across every visitor to a public demo — it trips far
+ * more often than a real outage would. Surface it as an expected "the demo is
+ * popular right now" state rather than a raw SDK stack trace.
+ */
+export function friendlyErrorMessage(err: unknown): string {
+  const raw = err instanceof Error ? err.message : String(err);
+  if (/429|quota|rate.?limit/i.test(raw)) {
+    return (
+      "This demo runs on a free Gemini API tier with a small shared daily " +
+      "request limit, and it's been hit. Please try again in a minute — " +
+      "or shortly after midnight Pacific, when the quota resets."
+    );
+  }
+  return "Something went wrong answering that. Please try again.";
+}

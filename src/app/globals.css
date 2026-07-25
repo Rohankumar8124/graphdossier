@@ -63,6 +63,19 @@ h3 {
 .prose-dossier p {
   margin: 0.9em 0;
 }
+/* Opening flourish: the first letter of every answer gets a big serif
+   initial in the signature pink — a case-file cover page, in miniature. */
+.prose-dossier > p:first-child::first-letter {
+  float: left;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 700;
+  font-size: 3.1em;
+  line-height: 0.78;
+  margin: 0.03em 0.1em 0 -0.01em;
+  color: var(--accent);
+  text-shadow: 0 0 24px color-mix(in srgb, var(--accent) 40%, transparent);
+}
 .prose-dossier h1,
 .prose-dossier h2,
 .prose-dossier h3,
@@ -82,7 +95,9 @@ h3 {
   font-size: 1.08em;
 }
 .prose-dossier strong {
-  color: var(--foreground);
+  /* named entities (people, orgs, key facts) read warm, not plain white —
+     the accent lives in the prose itself, not just chips and borders */
+  color: color-mix(in srgb, var(--accent) 45%, var(--foreground));
   font-weight: 700;
 }
 .prose-dossier em {
@@ -162,7 +177,10 @@ h3 {
   margin: 1.5em 0;
 }
 .prose-dossier table {
+  display: block;
   width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-collapse: collapse;
   margin: 1em 0;
   font-size: 0.92em;

@@ -9,7 +9,7 @@
  *   {"type":"done"}
  */
 import { NextRequest } from "next/server";
-import { getChatModel } from "@/lib/gemini";
+import { getChatModel, friendlyErrorMessage } from "@/lib/gemini";
 import { buildContext, RAG_SYSTEM_PROMPT } from "@/lib/rag";
 import { runGraphEditor } from "@/lib/agent";
 import { classifyIntent } from "@/lib/intent";
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
         controller.enqueue(line({ type: "done" }));
       } catch (err) {
         controller.enqueue(
-          line({ type: "error", message: (err as Error).message }),
+          line({ type: "error", message: friendlyErrorMessage(err) }),
         );
       } finally {
         controller.close();

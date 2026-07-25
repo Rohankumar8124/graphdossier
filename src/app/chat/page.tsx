@@ -72,7 +72,7 @@ export default function ChatPage() {
           } else if (evt.type === "error") {
             apply((m) => ({
               ...m,
-              content: m.content + `\n\n_Error: ${evt.message}_`,
+              content: m.content + `\n\n> ⏸ **Held up.** ${evt.message}`,
             }));
           }
         }
@@ -83,7 +83,7 @@ export default function ChatPage() {
         const copy = [...cur];
         copy[copy.length - 1] = {
           role: "assistant",
-          content: `Request failed: ${(err as Error).message}`,
+          content: `> ⏸ **Held up.** Couldn't reach the server (${(err as Error).message}). Please try again.`,
         };
         return copy;
       });
