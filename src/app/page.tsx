@@ -2,6 +2,47 @@ import Link from "next/link";
 import Stats from "@/components/Stats";
 import Reveal from "@/components/Reveal";
 
+const COMPARISON = [
+  {
+    tool: "DocumentCloud & full-text readers",
+    does: "Search the words",
+    misses: "Relationships between entities across documents",
+  },
+  {
+    tool: "Aleph (OCCRP)",
+    does: "Cross-reference entities",
+    misses: "Tuned to leaks/sanctions data, heavy to operate",
+  },
+  {
+    tool: "Manual review",
+    does: "Everything, eventually",
+    misses: "Weeks of a journalist's time per dump",
+  },
+];
+
+const IMPACT = [
+  {
+    who: "Investigative journalists",
+    before: "Weeks of manual cross-referencing",
+    after: "An explorable graph in minutes",
+  },
+  {
+    who: "Civic-tech & transparency groups",
+    before: "Redaction patterns are anecdotal",
+    after: "Measurable — by agency, by exemption, by topic",
+  },
+  {
+    who: "Policy researchers",
+    before: "Primary sources scattered across PDFs",
+    after: "A cited, queryable dataset",
+  },
+  {
+    who: "Anyone filing the follow-up request",
+    before: "Guessing what to ask for next",
+    after: "The graph shows exactly what's still hidden, and where",
+  },
+];
+
 const FILE_INDEX = [
   {
     t: "Schema-guided extraction",
@@ -97,6 +138,68 @@ export default function Home() {
           </Link>
         </div>
       </section>
+
+      {/* Why Graphdossier: the differentiator, up front, before anything else */}
+      <Reveal as="section" className="fx-rise mt-20">
+        <p className="font-mono text-xs uppercase tracking-widest text-accent">
+          Why Graphdossier
+        </p>
+        <h2 className="mt-2 max-w-2xl text-2xl font-bold leading-snug sm:text-3xl">
+          Other tools search the words. Graphdossier finds{" "}
+          <span className="text-accent">the network</span> — and treats what
+          got hidden as evidence.
+        </h2>
+
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {COMPARISON.map((c) => (
+            <div
+              key={c.tool}
+              className="rounded-lg border border-border bg-surface p-4"
+            >
+              <p className="text-sm font-semibold">{c.tool}</p>
+              <p className="mt-2 text-xs text-muted">
+                <span className="text-foreground">Does:</span> {c.does}
+              </p>
+              <p className="mt-1.5 text-xs text-muted">
+                <span className="text-accent">Misses:</span> {c.misses}
+              </p>
+            </div>
+          ))}
+          <div className="glow-accent rounded-lg border bg-surface p-4">
+            <p className="text-sm font-semibold text-accent">Graphdossier</p>
+            <p className="mt-2 text-xs text-muted">
+              <span className="text-foreground">Does:</span> reconstructs the
+              who-talked-to-whom-when network automatically
+            </p>
+            <p className="mt-1.5 text-xs text-muted">
+              <span className="text-foreground">Also:</span> treats every
+              redaction as a queryable, first-class lead
+            </p>
+          </div>
+        </div>
+
+        <p className="mx-auto mt-4 max-w-3xl text-sm text-muted">
+          Transparency laws only create accountability if someone can
+          actually process what gets released — the impact is concrete, not
+          theoretical:
+        </p>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {IMPACT.map((f) => (
+            <div
+              key={f.who}
+              className="rounded-lg border border-border bg-surface p-4"
+            >
+              <p className="font-mono text-[11px] uppercase tracking-wide text-accent">
+                {f.who}
+              </p>
+              <p className="mt-2 text-xs text-muted line-through decoration-border">
+                {f.before}
+              </p>
+              <p className="mt-1 text-sm text-foreground">→ {f.after}</p>
+            </div>
+          ))}
+        </div>
+      </Reveal>
 
       {/* The domain: what FOIA/RTI is, and why this needs to exist */}
       <section className="mt-20 grid gap-10 lg:grid-cols-5">
