@@ -2,42 +2,34 @@ import Link from "next/link";
 import Stats from "@/components/Stats";
 import Reveal from "@/components/Reveal";
 
-const FEATURES = [
-  {
-    t: "Schema-guided extraction",
-    d: "Gemini structured output constrained by a typed graph schema — Person, Organization, Document, Event, Location, Topic, RedactedSpan. The model can't invent a type the graph doesn't know.",
-  },
-  {
-    t: "Redactions as first-class leads",
-    d: "Every blacked-out span becomes a RedactedSpan node carrying its exemption code (b4, b5, b6…) and surrounding context — queryable, visible, chaseable.",
-  },
+const FILE_INDEX = [
   {
     t: "GraphRAG chat",
-    d: "Ask in plain English. Semantic search finds the documents, one-hop graph expansion pulls in connected entities and redactions, and the answer streams back grounded in the records.",
+    d: "semantic search → one-hop graph expansion → streamed answers grounded in the records.",
   },
   {
-    t: "Edit the graph by chatting",
-    d: "“Delete the node for Bob”, “rename Project X”, “connect Alice to Acme” — a LangGraph agent resolves names to nodes and performs schema-validated edits, then tells you exactly what changed.",
-  },
-  {
-    t: "A real graph API",
-    d: "Create, search, rename, and delete nodes and relationships over REST — the same operations the agent uses, schema-validated the same way.",
-  },
-  {
-    t: "Live-pipeline uploads",
-    d: "Drop PDFs or text into the running app and watch parse → extract → resolve → embed → write stream stage-by-stage, per file.",
-  },
-  {
-    t: "Visual explorer",
-    d: "The whole graph, color-coded by type, with redactions ringed in red. Click any node to inspect it; follow the meeting chains.",
+    t: "Schema-guided extraction",
+    d: "Gemini structured output constrained by a typed graph schema — it can't invent a type the graph doesn't know.",
   },
   {
     t: "Entity resolution",
-    d: "“Robert Calloway”, “Bob”, and a bare signature “R. Calloway” collapse into one Person node — across every document in the corpus.",
+    d: "“Robert Calloway”, “Bob”, and “R. Calloway” collapse into one Person node across the corpus.",
+  },
+  {
+    t: "A real graph API",
+    d: "create, search, rename, delete — nodes and relationships over REST, schema-validated like the agent.",
+  },
+  {
+    t: "Live-pipeline uploads",
+    d: "drop PDFs and watch parse → extract → resolve → embed → write stream stage-by-stage.",
+  },
+  {
+    t: "Visual explorer",
+    d: "the whole graph color-coded by type, redactions ringed in red, every node inspectable.",
   },
   {
     t: "Zero-setup embedded graph",
-    d: "The database is embedded (Kùzu) and its typed tables are generated from the schema. No server to install, nothing to host — clone, ingest, run.",
+    d: "Kùzu embedded database, tables generated from the schema — clone, ingest, run. No server.",
   },
 ];
 
@@ -148,7 +140,7 @@ export default function Home() {
         ))}
       </section>
 
-      {/* Everything it does */}
+      {/* Everything it does — case-file spread */}
       <section className="mt-16">
         <Reveal className="fx-rise">
           <h2 className="text-2xl font-bold">
@@ -160,18 +152,97 @@ export default function Home() {
             reshape it.
           </p>
         </Reveal>
-        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map((f, i) => (
+
+        {/* Two flagship exhibits */}
+        <div className="mt-8 grid gap-6 lg:grid-cols-2">
+          {/* Exhibit A: redactions as data — a hover-declassifiable document */}
+          <Reveal className="fx-rise rounded-lg border border-border bg-surface p-6">
+            <p className="font-mono text-xs uppercase tracking-widest text-accent">
+              Exhibit A
+            </p>
+            <h3 className="mt-1 text-lg font-semibold">
+              <span className="fx-unredact">Redactions as first-class leads</span>
+            </h3>
+            <p className="mt-2 text-sm text-muted">
+              Every blacked-out span becomes a <code>RedactedSpan</code> node with
+              its exemption code and context — queryable, visible, chaseable.
+              Hover the bars:
+            </p>
+            <div className="mt-4 rounded-md border border-border bg-background/60 p-4 font-mono text-xs leading-6 text-muted">
+              <p className="text-foreground">
+                MEMO · Atwater Mill site assessment
+              </p>
+              <p className="mt-2">
+                Sampling at the north lot found{" "}
+                <span className="redacted" title="b(4) — hover to declassify">
+                  benzene at 40× the limit
+                </span>{" "}
+                <span className="stamp-chip !text-[9px]">b(4)</span>. Recommend{" "}
+                <span className="redacted" title="b(5) — hover to declassify">
+                  halting Phase 2 approval
+                </span>{" "}
+                <span className="stamp-chip !text-[9px]">b(5)</span> pending
+                review by{" "}
+                <span className="redacted" title="b(6) — hover to declassify">
+                  R.&nbsp;Calloway
+                </span>{" "}
+                <span className="stamp-chip !text-[9px]">b(6)</span>.
+              </p>
+            </div>
+          </Reveal>
+
+          {/* Exhibit B: agent editing — a mini transcript */}
+          <Reveal className="fx-rise rounded-lg border border-border bg-surface p-6" delay={120}>
+            <p className="font-mono text-xs uppercase tracking-widest text-accent">
+              Exhibit B
+            </p>
+            <h3 className="mt-1 text-lg font-semibold">
+              <span className="fx-unredact">Edit the graph by chatting</span>
+            </h3>
+            <p className="mt-2 text-sm text-muted">
+              A LangGraph agent resolves names to nodes and performs
+              schema-validated edits — then tells you exactly what changed.
+            </p>
+            <div className="mt-4 space-y-2.5 text-sm">
+              <div className="flex justify-end">
+                <span className="rounded-lg rounded-br-sm bg-accent px-3 py-1.5 text-background">
+                  connect Alice Vasquez to Acme Corp
+                </span>
+              </div>
+              <div className="flex">
+                <div className="rounded-lg rounded-bl-sm border border-border bg-background/60 px-3 py-2 font-mono text-xs leading-5 text-muted">
+                  <span className="text-accent">find_nodes</span> → Person:alice-vasquez ·
+                  Organization:acme-corp
+                  <br />
+                  <span className="text-accent">connect_nodes</span> →
+                  AFFILIATED_WITH ✓
+                  <br />
+                  <span className="text-foreground">
+                    Connected Alice Vasquez —AFFILIATED_WITH→ Acme Corp.
+                  </span>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+
+        {/* The rest: a dossier index, not boxes */}
+        <div className="mt-10 grid gap-x-14 sm:grid-cols-2">
+          {FILE_INDEX.map((f, i) => (
             <Reveal
               key={f.t}
-              className="fx-rise rounded-lg border border-border bg-surface p-5 transition-colors hover:bg-surface-2"
-              delay={(i % 3) * 90}
+              className="fx-rise group flex gap-4 border-b border-border py-4"
+              delay={(i % 2) * 80}
             >
-              <div className="h-1 w-8 rounded-full bg-accent" />
-              <h3 className="mt-3 font-semibold">
-                <span className="fx-unredact">{f.t}</span>
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-muted">{f.d}</p>
+              <span className="font-mono text-sm text-accent">
+                §{String(i + 1).padStart(2, "0")}
+              </span>
+              <p className="text-sm leading-relaxed">
+                <span className="font-semibold transition-colors group-hover:text-accent">
+                  {f.t}
+                </span>{" "}
+                <span className="text-muted">— {f.d}</span>
+              </p>
             </Reveal>
           ))}
         </div>
