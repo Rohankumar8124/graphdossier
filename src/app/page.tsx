@@ -44,7 +44,7 @@ export default function Home() {
           GraphRAG for released records
         </p>
         <h1
-          className="fx-hero text-4xl font-bold leading-tight sm:text-5xl"
+          className="fx-hero text-3xl font-bold leading-tight sm:text-4xl md:text-5xl"
           style={{ "--fx-delay": "90ms" } as React.CSSProperties}
         >
           Turn a document dump into a map of{" "}

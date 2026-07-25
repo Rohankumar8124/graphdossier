@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Newsreader } from "next/font/google";
+import Nav from "@/components/Nav";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -21,40 +22,11 @@ const newsreader = Newsreader({
   weight: ["400", "500", "600", "700"],
 });
 
-import Link from "next/link";
-
 export const metadata: Metadata = {
   title: "Graphdossier — map released records",
   description:
     "Turn a pile of released FOIA/RTI documents into a navigable map of who knew what, when — and what's still redacted.",
 };
-
-function Nav() {
-  return (
-    <header className="sticky top-0 z-20 border-b border-border bg-background/80 backdrop-blur">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3">
-        <Link href="/" className="flex items-center gap-2 font-semibold">
-          <span className="inline-block h-3 w-6 rounded-sm bg-accent" />
-          Graphdossier
-        </Link>
-        <div className="flex items-center gap-1 text-sm text-muted">
-          <Link href="/guide" className="rounded px-3 py-1.5 hover:bg-surface-2 hover:text-foreground">
-            How to use
-          </Link>
-          <Link href="/chat" className="rounded px-3 py-1.5 hover:bg-surface-2 hover:text-foreground">
-            Ask
-          </Link>
-          <Link href="/explorer" className="rounded px-3 py-1.5 hover:bg-surface-2 hover:text-foreground">
-            Explore
-          </Link>
-          <Link href="/upload" className="rounded px-3 py-1.5 hover:bg-surface-2 hover:text-foreground">
-            Upload
-          </Link>
-        </div>
-      </nav>
-    </header>
-  );
-}
 
 export default function RootLayout({
   children,

@@ -59,8 +59,10 @@ The broader point: transparency laws only create accountability if someone can a
 - **Graph REST API** — the same operations as first-class endpoints: create/search/rename/delete nodes, create/delete relationships (see [Graph API](#graph-api)).
 - **Visual explorer (`/explorer`)** — the whole graph rendered with Cytoscape: filter by type, inspect nodes, follow the meeting chains.
 - **Runtime ingestion with a live pipeline view (`/upload`)** — drop one or many PDFs/text files into the running app and watch the pipeline work in real time: a per-file queue with remaining count, a stage stepper (parse → extract → resolve → embed → write nodes → write edges) with live counts, per-edge activity messages, and an activity log. Progress streams from the server as NDJSON; one failed file doesn't stop the batch.
+- **Field manual (`/guide`)** — a step-by-step walkthrough of the whole workflow (get a release → split it → upload → ask → explore → clean up by chat), what file formats and OCR path are supported, and where to find real FOIA/RTI releases to practice on.
 - **Idempotent graph writes** — tables are created `IF NOT EXISTS` from the schema, ingestion uses `MERGE`; re-ingesting is safe.
 - **Fail-fast configuration** — the environment is validated with Zod at boot (`src/lib/config.ts`), and the embedding dimension is measured at runtime rather than hardcoded.
+- **Responsive UI** — the landing page, chat, explorer, and upload flows are usable on a phone: the graph explorer's legend and node-detail panels reflow into a bottom sheet on narrow screens instead of overlapping.
 
 ## Architecture
 
@@ -187,6 +189,8 @@ gcloud run deploy graphdossier --source . --region asia-south1 \
 ```
 
 For durable runtime writes, promote the graph to a rebuild-and-redeploy flow (CI job runs ingest → new image) or mount object storage — future work.
+
+> **Free-tier Gemini quota:** `aistudio.google.com` API keys on the free tier cap requests per model per day in the low tens, shared across *every* visitor to the deployed URL — a public demo link can exhaust it quickly. The app fails gracefully (a friendly "try again shortly" message instead of a raw error) when this happens; for durable public traffic, enable billing on the key's project to move to the pay-as-you-go tier.
 
 ## The demo corpus: Project Greenfield
 

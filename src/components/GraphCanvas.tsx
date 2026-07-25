@@ -272,17 +272,17 @@ export default function GraphCanvas() {
       <div ref={containerRef} className="h-full w-full" />
 
       {/* Legend + live counts + type filters */}
-      <div className="absolute left-4 top-4 rounded-lg border border-border bg-surface/90 p-3 backdrop-blur">
-        <div className="mb-1 text-xs font-medium uppercase tracking-wide text-muted">
+      <div className="absolute left-2 top-2 max-w-[62vw] rounded-lg border border-border bg-surface/90 p-2 backdrop-blur sm:left-4 sm:top-4 sm:max-w-none sm:p-3">
+        <div className="mb-1 text-[10px] font-medium uppercase tracking-wide text-muted sm:text-xs">
           In view
         </div>
-        <div className="mb-2 font-mono text-sm">
+        <div className="mb-2 font-mono text-xs sm:text-sm">
           <span className="text-foreground">{visibleCounts.nodes}</span>
           <span className="text-muted"> nodes · </span>
           <span className="text-foreground">{visibleCounts.edges}</span>
-          <span className="text-muted"> relationships</span>
+          <span className="text-muted"> rel.</span>
         </div>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+        <div className="grid grid-cols-1 gap-x-3 gap-y-1 sm:grid-cols-2 sm:gap-x-4">
           {NODE_TYPES.map((t) => {
             const off = hiddenTypes.has(t);
             return (
@@ -291,29 +291,29 @@ export default function GraphCanvas() {
                 onClick={() => toggleType(t)}
                 title={off ? `Show ${t}` : `Hide ${t}`}
                 aria-pressed={!off}
-                className={`flex items-center gap-2 rounded px-1 py-0.5 text-left text-xs transition-opacity hover:bg-surface-2 ${
+                className={`flex items-center gap-2 rounded px-1 py-0.5 text-left text-[11px] transition-opacity hover:bg-surface-2 sm:text-xs ${
                   off ? "opacity-35" : ""
                 }`}
               >
                 <span
-                  className="h-2.5 w-2.5 rounded-full"
+                  className="h-2.5 w-2.5 shrink-0 rounded-full"
                   style={{ background: NODE_COLORS[t] }}
                 />
-                {t}
-                <span className="ml-auto font-mono text-[10px] text-muted">
+                <span className="truncate">{t}</span>
+                <span className="ml-auto shrink-0 font-mono text-[10px] text-muted">
                   {typeCounts[t]}
                 </span>
               </button>
             );
           })}
         </div>
-        <p className="mt-2 max-w-[220px] text-[10px] text-muted">
+        <p className="mt-2 hidden max-w-[220px] text-[10px] text-muted sm:block">
           Click a type to toggle it · hover a node to spotlight its neighborhood
         </p>
       </div>
 
       {/* Controls: zoom + recenter */}
-      <div className="absolute bottom-4 left-4 flex flex-col gap-1.5">
+      <div className="absolute bottom-4 left-2 flex flex-col gap-1.5 sm:left-4">
         {(
           [
             ["+", () => zoom(1.3), "Zoom in"],
@@ -335,8 +335,8 @@ export default function GraphCanvas() {
 
       {/* Overlays */}
       {status !== "ready" && (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="rounded-lg border border-border bg-surface px-6 py-4 text-center text-sm text-muted">
+        <div className="absolute inset-0 flex items-center justify-center px-4">
+          <div className="max-w-xs rounded-lg border border-border bg-surface px-6 py-4 text-center text-sm text-muted sm:max-w-sm">
             {status === "loading" && "Loading graph…"}
             {status === "empty" && (
               <>
@@ -350,9 +350,9 @@ export default function GraphCanvas() {
         </div>
       )}
 
-      {/* Detail panel */}
+      {/* Detail panel — a bottom sheet on phones, a floating card on larger screens */}
       {selected && (
-        <div className="absolute right-4 top-4 w-72 rounded-lg border border-border bg-surface/95 p-4 backdrop-blur">
+        <div className="absolute inset-x-3 bottom-16 max-h-[45vh] overflow-y-auto rounded-lg border border-border bg-surface/95 p-4 backdrop-blur sm:inset-x-auto sm:bottom-auto sm:right-4 sm:top-4 sm:max-h-none sm:w-72">
           <div className="flex items-center gap-2">
             <span
               className="h-3 w-3 rounded-full"
