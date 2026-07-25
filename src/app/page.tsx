@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Stats from "@/components/Stats";
+import Reveal from "@/components/Reveal";
 
 const FEATURES = [
   {
@@ -43,12 +44,21 @@ const FEATURES = [
 export default function Home() {
   return (
     <div className="mx-auto max-w-6xl px-5 py-16">
+      {/* scroll-progress ink line (CSS scroll-driven) */}
+      <div className="fx-trail" aria-hidden />
+
       {/* Hero */}
       <section className="max-w-3xl">
-        <p className="mb-3 text-sm font-medium uppercase tracking-widest text-accent">
+        <p
+          className="fx-hero mb-3 text-sm font-medium uppercase tracking-widest text-accent"
+          style={{ "--fx-delay": "0ms" } as React.CSSProperties}
+        >
           GraphRAG for released records
         </p>
-        <h1 className="text-4xl font-bold leading-tight sm:text-5xl">
+        <h1
+          className="fx-hero text-4xl font-bold leading-tight sm:text-5xl"
+          style={{ "--fx-delay": "90ms" } as React.CSSProperties}
+        >
           Turn a document dump into a map of{" "}
           <span className="text-accent-2">who knew what, when</span> — and what&apos;s
           still{" "}
@@ -57,19 +67,28 @@ export default function Home() {
           </span>
           .
         </h1>
-        <p className="mt-3 text-sm text-muted">
+        <p
+          className="fx-hero mt-3 text-sm text-muted"
+          style={{ "--fx-delay": "200ms" } as React.CSSProperties}
+        >
           <span className="text-accent">↑ Yes, that&apos;s a real redaction — hover
           it to declassify.</span>{" "}
           Around here, blacked-out text isn&apos;t missing data. It <em>is</em> data.
         </p>
-        <p className="mt-5 text-lg text-muted">
+        <p
+          className="fx-hero mt-5 text-lg text-muted"
+          style={{ "--fx-delay": "300ms" } as React.CSSProperties}
+        >
           Graphdossier reads released FOIA/RTI documents, extracts the people,
           organizations, meetings and topics into a knowledge graph, and treats
           every <strong className="text-accent">redaction as a first-class
           lead</strong> you can query. Ask questions in plain English, get answers
           grounded in the records — or tell the agent to reshape the graph itself.
         </p>
-        <div className="mt-8 flex flex-wrap gap-3">
+        <div
+          className="fx-hero mt-8 flex flex-wrap gap-3"
+          style={{ "--fx-delay": "420ms" } as React.CSSProperties}
+        >
           <Link
             href="/chat"
             className="rounded-md bg-accent px-5 py-2.5 font-medium text-background hover:opacity-90"
@@ -92,9 +111,9 @@ export default function Home() {
       </section>
 
       {/* Live stats */}
-      <section className="mt-12">
+      <Reveal as="section" className="fx-rise mt-12">
         <Stats />
-      </section>
+      </Reveal>
 
       {/* How it works */}
       <section className="mt-16 grid gap-6 sm:grid-cols-3">
@@ -114,44 +133,59 @@ export default function Home() {
             t: "Investigate",
             d: "Ask questions over a GraphRAG retriever, walk the graph visually, or edit it by chat. Redactions surface as red nodes — the leads worth chasing.",
           },
-        ].map((s) => (
-          <div
+        ].map((s, i) => (
+          <Reveal
             key={s.n}
-            className="rounded-lg border border-border bg-surface p-5"
+            className="fx-rise rounded-lg border border-border bg-surface p-5"
+            delay={i * 120}
           >
             <div className="font-mono text-sm text-accent">{s.n}</div>
-            <h3 className="mt-2 text-lg font-semibold">{s.t}</h3>
+            <h3 className="mt-2 text-lg font-semibold">
+              <span className="fx-unredact">{s.t}</span>
+            </h3>
             <p className="mt-2 text-sm text-muted">{s.d}</p>
-          </div>
+          </Reveal>
         ))}
       </section>
 
       {/* Everything it does */}
       <section className="mt-16">
-        <h2 className="text-2xl font-bold">
-          Everything in the box<span className="text-accent">.</span>
-        </h2>
-        <p className="mt-2 max-w-2xl text-sm text-muted">
-          One pipeline, one typed schema, one graph — read it, question it,
-          reshape it.
-        </p>
+        <Reveal className="fx-rise">
+          <h2 className="text-2xl font-bold">
+            Everything in the box{" "}
+            <span className="fx-stamp stamp-chip">Declassified</span>
+          </h2>
+          <p className="fx-type mt-2 max-w-2xl text-sm text-muted">
+            One pipeline, one typed schema, one graph — read it, question it,
+            reshape it.
+          </p>
+        </Reveal>
         <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map((f) => (
-            <div
+          {FEATURES.map((f, i) => (
+            <Reveal
               key={f.t}
-              className="rounded-lg border border-border bg-surface p-5 transition-colors hover:bg-surface-2"
+              className="fx-rise rounded-lg border border-border bg-surface p-5 transition-colors hover:bg-surface-2"
+              delay={(i % 3) * 90}
             >
               <div className="h-1 w-8 rounded-full bg-accent" />
-              <h3 className="mt-3 font-semibold">{f.t}</h3>
+              <h3 className="mt-3 font-semibold">
+                <span className="fx-unredact">{f.t}</span>
+              </h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">{f.d}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>
 
       {/* Demo dataset note */}
-      <section className="mt-16 rounded-lg border border-border bg-surface p-6">
-        <h2 className="text-lg font-semibold">The demo corpus: Project Greenfield</h2>
+      <Reveal
+        as="section"
+        className="fx-rise mt-16 rounded-lg border border-border bg-surface p-6"
+      >
+        <h2 className="text-lg font-semibold">
+          The demo corpus: Project Greenfield{" "}
+          <span className="fx-stamp stamp-chip">Synthetic</span>
+        </h2>
         <p className="mt-2 max-w-3xl text-sm text-muted">
           The bundled dataset is a synthetic release in which a fictional city
           fast-tracks a riverside development while a contamination finding is
@@ -161,7 +195,7 @@ export default function Home() {
           pipeline runs on real public sets like the Clinton email release, the
           FBI Vault, or MuckRock dumps.
         </p>
-      </section>
+      </Reveal>
     </div>
   );
 }
