@@ -33,12 +33,21 @@ body {
 }
 
 /* A blacked-out span, used in the hero to evoke a redaction. */
+/* A censor's bar over the word — hover (or tap) to "declassify" it. */
 .redacted {
   background: var(--accent);
   color: var(--accent);
   border-radius: 2px;
-  padding: 0 0.15em;
+  padding: 0 0.18em;
   user-select: none;
+  cursor: help;
+  transition:
+    background 0.45s ease,
+    color 0.45s ease;
+}
+.redacted:hover {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
 }
 
 ::-webkit-scrollbar {

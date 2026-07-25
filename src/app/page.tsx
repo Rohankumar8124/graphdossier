@@ -12,7 +12,11 @@ export default function Home() {
         <h1 className="text-4xl font-bold leading-tight sm:text-5xl">
           Turn a document dump into a map of{" "}
           <span className="text-accent-2">who knew what, when</span> — and what&apos;s
-          still <span className="redacted">classified████</span>.
+          still{" "}
+          <span className="redacted" title="Hover to declassify">
+            classified
+          </span>
+          .
         </h1>
         <p className="mt-5 text-lg text-muted">
           Graphdossier reads released FOIA/RTI documents, extracts the people,
