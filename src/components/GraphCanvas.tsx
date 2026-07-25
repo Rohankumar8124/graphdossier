@@ -341,8 +341,8 @@ export default function GraphCanvas() {
             {status === "empty" && (
               <>
                 The graph is empty. Run{" "}
-                <code className="text-foreground">pnpm ingest --reset</code> to
-                load the corpus.
+                <code className="text-foreground">pnpm ingest --reset</code>{" "}
+                to load the corpus.
               </>
             )}
             {status === "error" && "Could not load the graph."}

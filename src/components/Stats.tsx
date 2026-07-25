@@ -32,8 +32,8 @@ export default function Stats() {
       <div className="rounded-lg border border-border bg-surface p-5 text-sm text-muted">
         No graph yet. Add your Gemini key to{" "}
         <code className="text-foreground">.env.local</code> and run{" "}
-        <code className="text-foreground">pnpm ingest --reset</code> to load the
-        Project Greenfield corpus.
+        <code className="text-foreground">pnpm ingest --reset</code>{" "}
+        to load the Project Greenfield corpus.
       </div>
     );
   }
@@ -41,33 +41,38 @@ export default function Stats() {
   const entries = Object.entries(data.counts).filter(([, c]) => c > 0);
 
   return (
-    <div className="rounded-lg border border-border bg-surface p-5">
-      <div className="mb-4 flex items-baseline justify-between">
-        <span className="text-sm font-medium text-muted">In the graph now</span>
-        <Link href="/explorer" className="text-sm text-accent-2 hover:underline">
-          Explore →
+    <div>
+      <div className="flex items-baseline justify-between border-b border-border pb-3">
+        <span className="font-mono text-xs uppercase tracking-widest text-accent">
+          Case file tally — live
+        </span>
+        <Link
+          href="/explorer"
+          className="text-sm font-medium text-accent transition-colors hover:text-foreground"
+        >
+          Explore the graph →
         </Link>
       </div>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="mt-5 flex flex-wrap gap-x-8 gap-y-5">
         {entries.map(([type, count]) => (
-          <div key={type} className="rounded-md bg-surface-2 p-3">
-            <div className="flex items-center gap-2">
+          <div key={type} className="min-w-[92px]">
+            <div className="flex items-baseline gap-2">
               <span
-                className="h-2.5 w-2.5 rounded-full"
+                className="h-2 w-2 shrink-0 rounded-full"
                 style={{ background: NODE_COLORS[type as keyof typeof NODE_COLORS] }}
               />
-              <span className="text-xs text-muted">{type}</span>
+              <span className="font-mono text-3xl font-bold tabular-nums text-foreground">
+                {count}
+              </span>
             </div>
-            <div className="mt-1 text-2xl font-semibold tabular-nums">
-              {count}
-            </div>
+            <div className="mt-0.5 pl-4 text-xs text-muted">{type}</div>
           </div>
         ))}
-        <div className="rounded-md bg-surface-2 p-3">
-          <div className="text-xs text-muted">Connections</div>
-          <div className="mt-1 text-2xl font-semibold tabular-nums">
+        <div className="min-w-[92px] border-l border-border pl-8">
+          <span className="font-mono text-3xl font-bold tabular-nums text-accent">
             {data.edges}
-          </div>
+          </span>
+          <div className="mt-0.5 text-xs text-muted">Connections</div>
         </div>
       </div>
     </div>

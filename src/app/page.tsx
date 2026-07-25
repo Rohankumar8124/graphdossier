@@ -114,8 +114,8 @@ export default function Home() {
           </div>
           <p className="mt-4 text-sm leading-relaxed text-muted">
             Transparency laws that let{" "}
-            <strong className="text-foreground">any citizen</strong> force the
-            government to hand over its internal records — emails, memos,
+            <strong className="text-foreground">any citizen</strong>{" "}
+            force the government to hand over its internal records — emails, memos,
             meeting minutes, invoices. It&apos;s how journalists find out what
             officials actually did, not what they announced.
           </p>
